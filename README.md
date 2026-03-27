@@ -143,7 +143,3 @@ Authorization: Bearer <token>
 Token obtido em:
 
 - POST /auth/signin
-
-## Licença
-
-[GNU](LICENSE)
