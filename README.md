@@ -146,4 +146,4 @@ Token obtido em:
 
 ## Licença
 
-[MIT](LICENSE)
+[GNU](LICENSE)
