@@ -1,0 +1,20 @@
+import { inject, injectable } from "tsyringe";
+import { NotFoundError } from "helpers/errors/apiErrors";
+import { Cart } from "modules/Carts/entities/Cart";
+import { IOrderRepository } from "modules/Orders/repositories/IOrderRepository";
+import { Order } from "../../entities/Order";
+
+@injectable()
+export class FindByIdOrderService {
+  constructor(
+    @inject("OrderRepository")
+    private orderRepository: IOrderRepository
+  ) {}
+
+  async execute(id: string): Promise<Order> {
+    // Busca direta por id para validar existencia antes de devolver o recurso.
+    const order = await this.orderRepository.findById(id);
+    if (!order) throw new NotFoundError("Order not found!");
+    return order;
+  }
+}

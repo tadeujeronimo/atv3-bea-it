@@ -1,0 +1,91 @@
+{
+  "id": "g64k32nz8h",
+  "v": 2,
+  "name": "Marketing-Place",
+  "variables": [
+    {
+      "key": "baseurl",
+      "secret": false,
+      "initialValue": "http://localhost:",
+      "currentValue": ""
+    },
+    {
+      "key": "port",
+      "secret": false,
+      "initialValue": "5000",
+      "currentValue": ""
+    },
+    {
+      "key": "token",
+      "secret": true,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "user_name",
+      "secret": false,
+      "initialValue": "Usuario Hoppscotch",
+      "currentValue": ""
+    },
+    {
+      "key": "user_email",
+      "secret": false,
+      "initialValue": "usuario.hoppscotch@example.com",
+      "currentValue": ""
+    },
+    {
+      "key": "user_password",
+      "secret": true,
+      "initialValue": "SenhaSegura123",
+      "currentValue": ""
+    },
+    {
+      "key": "user_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "address_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "category_name",
+      "secret": false,
+      "initialValue": "Categoria Hoppscotch",
+      "currentValue": ""
+    },
+    {
+      "key": "category_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "product_name",
+      "secret": false,
+      "initialValue": "Produto Hoppscotch",
+      "currentValue": ""
+    },
+    {
+      "key": "product_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "cart_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    },
+    {
+      "key": "order_id",
+      "secret": false,
+      "initialValue": "",
+      "currentValue": ""
+    }
+  ]
+}

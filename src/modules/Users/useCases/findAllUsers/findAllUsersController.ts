@@ -1,0 +1,16 @@
+import { NextFunction, Request, Response } from "express";
+import { container } from "tsyringe";
+import { FindAllUsersService } from "./findAllUsersService";
+
+class FindAllUsersController {
+  async handle(req: Request, res: Response): Promise<Response> {
+    // Parametros de paginacao definidos no middleware.
+    const limit = res.locals.limit;
+    const offset = res.locals.offset;
+    const findAllUserService = container.resolve(FindAllUsersService);
+    const user = await findAllUserService.execute(limit, offset);
+    return res.send(user);
+  }
+}
+
+export default new FindAllUsersController();

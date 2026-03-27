@@ -1,0 +1,844 @@
+{
+  "v": 11,
+  "name": "Marketing-Place",
+  "folders": [
+    {
+      "v": 11,
+      "name": "Auth",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Signin",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/auth/signin",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\npw.test(\"Retorna token\", () => {\n  pw.expect(pw.response.body.token).toBeType(\"string\");\n});\n\nif (pw.response.body && pw.response.body.token) {\n  pw.env.set(\"token\", pw.response.body.token);\n}",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"<<user_email>>\",\n  \"password\": \"<<user_password>>\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Autentica usuario e salva token no ambiente."
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    },
+    {
+      "v": 11,
+      "name": "Users",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Create User",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/users",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<user_name>>\",\n  \"email\": \"<<user_email>>\",\n  \"password\": \"<<user_password>>\",\n  \"image\": \"https://images.example.com/users/default.png\",\n  \"admin\": false\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Cria usuario com payload conforme UserSchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Find All Users",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/users?limit=10&offset=0",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\npw.test(\"Retorna array\", () => {\n  pw.expect(Array.isArray(pw.response.body)).toBe(true);\n});\n\nconst users = pw.response.body;\nif (Array.isArray(users)) {\n  const created = users.find((u) => u.email === pw.env.get(\"user_email\"));\n  if (created && created._id) {\n    pw.env.set(\"user_id\", created._id);\n  }\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Lista usuarios e salva user_id pelo email de teste."
+        },
+        {
+          "v": "17",
+          "name": "Find User By Id",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/users/<<user_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\npw.test(\"Usuario tem _id\", () => {\n  pw.expect(pw.response.body._id).toBeType(\"string\");\n});\n\nconst addresses = pw.response.body && pw.response.body.addresses;\nif (Array.isArray(addresses) && addresses.length > 0 && addresses[0] && addresses[0]._id) {\n  pw.env.set(\"address_id\", addresses[0]._id);\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Busca usuario por id e captura address_id quando existir."
+        },
+        {
+          "v": "17",
+          "name": "Update User",
+          "method": "PUT",
+          "endpoint": "<<baseurl>><<port>>/users/<<user_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<user_name>> Atualizado\",\n  \"image\": \"https://images.example.com/users/updated.png\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Atualiza usuario autenticado."
+        },
+        {
+          "v": "17",
+          "name": "Add Address",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/users/add-address",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"street\": \"Rua das Flores\",\n  \"number\": \"123\",\n  \"complement\": \"Apto 12\",\n  \"zipcode\": \"12345-678\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Adiciona endereco com payload conforme AddressSchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Remove Address",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/users/remove-address/<<address_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove endereco do usuario autenticado."
+        },
+        {
+          "v": "17",
+          "name": "Add Favorite Product",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/users/add-favorite-product/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Adiciona produto aos favoritos do usuario."
+        },
+        {
+          "v": "17",
+          "name": "Remove Favorite Product",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/users/remove-favorite-product/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove produto dos favoritos do usuario."
+        },
+        {
+          "v": "17",
+          "name": "Find User Avatar",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/users/avatar/<<user_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Busca o arquivo de avatar do usuario por id."
+        },
+        {
+          "v": "17",
+          "name": "Update User Avatar",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>><<port>>/users/avatar",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": "{\n  \"avatar\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Atualiza avatar do usuario autenticado via multipart (campo avatar)."
+        },
+        {
+          "v": "17",
+          "name": "Delete User",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/users/<<user_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove usuario por id."
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    },
+    {
+      "v": 11,
+      "name": "Categories",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Create Category",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/categories",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<category_name>>\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Cria categoria com payload conforme CategorySchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Find All Categories",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/categories?limit=10&offset=0",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\nconst categories = pw.response.body;\nif (Array.isArray(categories)) {\n  const created = categories.find((c) => c.name === pw.env.get(\"category_name\"));\n  if (created && created._id) {\n    pw.env.set(\"category_id\", created._id);\n  }\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Lista categorias e salva category_id da categoria de teste."
+        },
+        {
+          "v": "17",
+          "name": "Find Category By Id",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/categories/<<category_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "Update Category",
+          "method": "PUT",
+          "endpoint": "<<baseurl>><<port>>/categories/<<category_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<category_name>> Atualizada\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "Delete Category",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/categories/<<category_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    },
+    {
+      "v": 11,
+      "name": "Products",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Create Product",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/products",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<product_name>>\",\n  \"description\": \"Produto de teste via Hoppscotch\",\n  \"unit_price\": 99.9,\n  \"image\": \"https://images.example.com/products/default.png\",\n  \"bar_code\": 100100200,\n  \"categories\": []\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Cria produto com payload conforme ProductSchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Find All Products",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/products?limit=10&offset=0",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\nconst products = pw.response.body;\nif (Array.isArray(products)) {\n  const created = products.find((p) => p.name === pw.env.get(\"product_name\"));\n  if (created && created._id) {\n    pw.env.set(\"product_id\", created._id);\n  }\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Lista produtos e salva product_id do produto de teste."
+        },
+        {
+          "v": "17",
+          "name": "Find Product By Id",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/products/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "Update Product",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>><<port>>/products/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"<<product_name>> Atualizado\",\n  \"description\": \"Descricao atualizada\",\n  \"unit_price\": 79.9,\n  \"bar_code\": 100100201\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "Add Category On Product",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/products/add-category/<<category_id>>/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Vincula categoria ao produto."
+        },
+        {
+          "v": "17",
+          "name": "Remove Category On Product",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/products/remove-category/<<category_id>>/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove vinculo categoria-produto."
+        },
+        {
+          "v": "17",
+          "name": "Delete Product",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/products/<<product_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    },
+    {
+      "v": 11,
+      "name": "Carts",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Create Cart",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/carts",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"products\": [],\n  \"total_price\": 129.9,\n  \"freight\": 15\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Cria carrinho para o usuario autenticado conforme CartSchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Find All Carts",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/carts?limit=10&offset=0",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\nconst carts = pw.response.body;\nif (Array.isArray(carts) && carts.length > 0 && carts[0]._id) {\n  pw.env.set(\"cart_id\", carts[0]._id);\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Lista carrinhos com paginacao e salva cart_id do primeiro item retornado."
+        },
+        {
+          "v": "17",
+          "name": "Find Cart By Id",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/carts/<<cart_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Busca carrinho por id."
+        },
+        {
+          "v": "17",
+          "name": "Update Cart",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>><<port>>/carts/<<cart_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"products\": [],\n  \"total_price\": 149.9,\n  \"freight\": 20\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Atualiza dados do carrinho por id."
+        },
+        {
+          "v": "17",
+          "name": "Delete Cart",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/carts/<<cart_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove carrinho por id."
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    },
+    {
+      "v": 11,
+      "name": "Orders",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "Create Order",
+          "method": "POST",
+          "endpoint": "<<baseurl>><<port>>/orders",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 201\", () => {\n  pw.expect(pw.response.status).toBe(201);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"products\": [],\n  \"total_price\": 199.9,\n  \"freight\": 25,\n  \"concluded\": false\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Cria pedido para o usuario autenticado conforme OrderSchemaJoi."
+        },
+        {
+          "v": "17",
+          "name": "Find All Orders",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/orders?limit=10&offset=0",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});\n\nconst orders = pw.response.body;\nif (Array.isArray(orders) && orders.length > 0 && orders[0]._id) {\n  pw.env.set(\"order_id\", orders[0]._id);\n}",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Lista pedidos com paginacao e salva order_id do primeiro item retornado."
+        },
+        {
+          "v": "17",
+          "name": "Find Order By Id",
+          "method": "GET",
+          "endpoint": "<<baseurl>><<port>>/orders/<<order_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 200\", () => {\n  pw.expect(pw.response.status).toBe(200);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Busca pedido por id."
+        },
+        {
+          "v": "17",
+          "name": "Update Order Status",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>><<port>>/orders/<<order_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Alterna status de conclusao do pedido."
+        },
+        {
+          "v": "17",
+          "name": "Delete Order",
+          "method": "DELETE",
+          "endpoint": "<<baseurl>><<port>>/orders/<<order_id>>",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "pw.test(\"Status 204\", () => {\n  pw.expect(pw.response.status).toBe(204);\n});",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": "Remove pedido por id."
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    }
+  ],
+  "requests": [],
+  "auth": {
+    "authType": "inherit",
+    "authActive": true
+  },
+  "headers": [],
+  "variables": [],
+  "description": null
+}
